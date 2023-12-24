@@ -5,9 +5,11 @@
 
 {% block body %}
     <form method="post">
-        <label for="serie">Nome da serie</label>
-        <input type="text" name="serie" id="serie">
+        <div class="mb-3">
+            <label for="serie" class="form-label">Nome da serie</label>
+            <input class="form-control" type="text" name="serie" id="serie">
+        </div>
 
-        <button type="submit">Cadastrar</button>
+        <button class="btn btn-dark" type="submit">Cadastrar</button>
     </form>
 {% endblock %}
