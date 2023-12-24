@@ -4,12 +4,12 @@
 {% block title %}Criar nova serie{% endblock %}
 
 {% block body %}
-    <form method="post">
+    <form method="post" action="{{ path('app_series_add') }}">
         <div class="mb-3">
-            <label for="serie" class="form-label">Nome da serie</label>
-            <input class="form-control" type="text" name="serie" id="serie">
+            <label for="name" class="form-label">Nome da serie</label>
+            <input class="form-control" type="text" name="name" id="name">
         </div>
 
-        <button class="btn btn-dark" type="submit">Cadastrar</button>
+        <button class="btn btn-dark" type="submit">Salvar</button>
     </form>
 {% endblock %}

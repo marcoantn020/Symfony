@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+
+{% block title %}Editar serie{% endblock %}
+
+{% block body %}
+    <form method="post" action="{{ path('app_series_edit', {'seriesId': serie.id}) }}">
+        <div class="mb-3">
+            <input type="hidden" name="_method" value="PUT">
+            <label for="name" class="form-label">Nome da serie</label>
+            <input class="form-control" type="text" name="name" id="name" value="{{ serie.name }}">
+        </div>
+
+        <button class="btn btn-dark" type="submit">Salvar</button>
+    </form>
+{% endblock %}
