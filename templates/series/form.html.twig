@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+
+{% block title %}Criar nova serie{% endblock %}
+
+{% block body %}
+    <form method="post">
+        <label for="serie">Nome da serie</label>
+        <input type="text" name="serie" id="serie">
+
+        <button type="submit">Cadastrar</button>
+    </form>
+{% endblock %}

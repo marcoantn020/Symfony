@@ -18,9 +18,12 @@ class SeriesController extends AbstractController
             'Suits'
         ];
 
-        return $this->render('series/index.html.twig', [
-            'controller_name' => 'SeriesController',
-            compact('seriesList')
-        ]);
+        return $this->render('series/index.html.twig', compact('seriesList'));
+    }
+
+    #[Route('/series/create', methods: ['GET'])]
+    public function addSeriesForm(): Response
+    {
+        return $this->render('series/form.html.twig');
     }
 }
