@@ -4,13 +4,10 @@
 {% block title %}Editar serie{% endblock %}
 
 {% block body %}
-    <form method="post" action="{{ path('app_series_edit', {'seriesId': serie.id}) }}">
-        <div class="mb-3">
-            <input type="hidden" name="_method" value="PUT">
-            <label for="name" class="form-label">Nome da serie</label>
-            <input class="form-control" type="text" name="name" id="name" value="{{ serie.name }}">
-        </div>
 
-        <button class="btn btn-dark" type="submit">Salvar</button>
-    </form>
+    {{ form_start(seriesForm) }}
+        {{ form_row(seriesForm.name) }}
+        {{ form_widget(seriesForm.save, {'attr': {'class': 'btn-dark'}}) }}
+    {{ form_end(seriesForm) }}
+
 {% endblock %}

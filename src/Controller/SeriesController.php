@@ -2,7 +2,11 @@
 
 namespace App\Controller;
 
+use App\DTO\SeriesCreateFormInput;
+use App\Entity\Episode;
+use App\Entity\Season;
 use App\Entity\Series;
+use App\Form\SeriesFormType;
 use App\Repository\SeriesRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,15 +35,32 @@ class SeriesController extends AbstractController
     #[Route('/series/create', name: 'app_series_form', methods: ['GET'])]
     public function addSeriesForm(): Response
     {
-        return $this->render('series/form.html.twig');
+        $seriesForm = $this->createForm(SeriesFormType::class, new SeriesCreateFormInput());
+        return $this->renderForm('series/form.html.twig', compact('seriesForm'));
     }
 
     #[Route('/series/create',  name: 'app_series_add', methods: ['POST'])]
     public function addSeries(Request $request): Response
     {
-        $seriesName = $request->request->get('name');
-        $newSeries = new Series($seriesName);
-        $this->seriesRepository->add($newSeries, true);
+        $input = new SeriesCreateFormInput();
+        $seriesForm = $this->createForm(SeriesFormType::class, $input)
+            ->handleRequest($request);
+
+        if (!$seriesForm->isValid()) {
+            return $this->renderForm('series/form.html.twig', compact('seriesForm'));
+        }
+
+        $series = new Series($input->seriesName);
+        for ($i = 1; $i <= $input->seasonsQuantity; $i++) {
+            $seasons = new Season($i);
+            for ($j = 1; $j <= $input->episodePerSeason; $j++) {
+                $episode = new Episode($j);
+                $seasons->addEpisode($episode);
+            }
+            $series->addSeason($seasons);
+        }
+
+        $this->seriesRepository->add($series, true);
 
         $this->addFlash('success', 'Serie adicionada com sucesso.');
 
@@ -57,15 +78,22 @@ class SeriesController extends AbstractController
     #[Route('/series/edit/{id}', name: 'app_series_edit_form', methods: ['GET'])]
     public function editSeriesForm(int $id): Response
     {
-        $serie = $this->seriesRepository->find($id);
-        return $this->render('series/form.edit.html.twig', compact('serie'));
+        $series = $this->seriesRepository->find($id);
+        $seriesForm = $this->createForm(SeriesFormType::class, $series, ['is_edit' => true]);
+        return $this->renderForm('series/form.edit.html.twig', compact('seriesForm', 'series'));
     }
 
     #[Route('/series/edit/{seriesId}', name: 'app_series_edit', methods: ['PUT'])]
     public function editSeries(int $seriesId, Request $request): Response
     {
         $series = $this->seriesRepository->find($seriesId);
-        $series->changeName($request->request->get('name'));
+        $seriesForm = $this->createForm(SeriesFormType::class, $series, ['is_edit' => true])
+            ->handleRequest($request);
+
+        if (!$seriesForm->isValid()) {
+            return $this->renderForm('series/form.edit.html.twig', compact('seriesForm','series'));
+        }
+
         $this->seriesRepository->add($series, true);
         $this->addFlash('success', 'Serie editada com sucesso.');
 

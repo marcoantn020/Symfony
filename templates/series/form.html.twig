@@ -4,12 +4,11 @@
 {% block title %}Criar nova serie{% endblock %}
 
 {% block body %}
-    <form method="post" action="{{ path('app_series_add') }}">
-        <div class="mb-3">
-            <label for="name" class="form-label">Nome da serie</label>
-            <input class="form-control" type="text" name="name" id="name">
-        </div>
 
-        <button class="btn btn-dark" type="submit">Salvar</button>
-    </form>
+    {{ form_start(seriesForm) }}
+           {{ form_row(seriesForm.seriesName) }}
+           {{ form_row(seriesForm.seasonsQuantity) }}
+           {{ form_row(seriesForm.episodePerSeason) }}
+           {{ form_widget(seriesForm.save, {'attr': {'class': 'btn-dark'}}) }}
+    {{ form_end(seriesForm) }}
 {% endblock %}
