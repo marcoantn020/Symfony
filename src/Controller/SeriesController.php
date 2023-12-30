@@ -55,6 +55,7 @@ class SeriesController extends AbstractController
             $seasons = new Season($i);
             for ($j = 1; $j <= $input->episodePerSeason; $j++) {
                 $episode = new Episode($j);
+                $episode->setWatched(false);
                 $seasons->addEpisode($episode);
             }
             $series->addSeason($seasons);

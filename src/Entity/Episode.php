@@ -7,12 +7,13 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EpisodeRepository::class)]
+#[ORM\Cache]
 class Episode
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private readonly int $id;
+    private int $id;
 
     public function __construct(
         #[ORM\Column(type: Types::SMALLINT)]
@@ -23,6 +24,9 @@ class Episode
     #[ORM\ManyToOne(inversedBy: 'episodes')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Season $season = null;
+
+    #[ORM\Column]
+    private ?bool $watched = null;
 
     public function getId(): ?int
     {
@@ -49,6 +53,18 @@ class Episode
     public function setSeason(?Season $season): static
     {
         $this->season = $season;
+
+        return $this;
+    }
+
+    public function isWatched(): ?bool
+    {
+        return $this->watched;
+    }
+
+    public function setWatched(bool $watched): static
+    {
+        $this->watched = $watched;
 
         return $this;
     }

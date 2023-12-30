@@ -21,28 +21,16 @@ class EpisodeRepository extends ServiceEntityRepository
         parent::__construct($registry, Episode::class);
     }
 
-//    /**
-//     * @return Episode[] Returns an array of Episode objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('e')
-//            ->andWhere('e.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('e.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function setEpisodeWatched(array $episodes, bool $watched): void
+    {
+        $watched = $watched ? 1 : 0;
+        $queryBuilder = $this->createQueryBuilder('episode');
 
-//    public function findOneBySomeField($value): ?Episode
-//    {
-//        return $this->createQueryBuilder('e')
-//            ->andWhere('e.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $queryBuilder->update('App\Entity\Episode', 'episode')
+            ->set('episode.watched', $watched)
+            ->where($queryBuilder->expr()->in('episode.id', $episodes));
+
+        $query = $queryBuilder->getQuery();
+        $query->execute();
+    }
 }

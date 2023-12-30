@@ -41,7 +41,6 @@ class SeriesRepository extends ServiceEntityRepository
     private function remove(Series $series, bool $flush = false): void
     {
         $this->getEntityManager()->remove($series);
-
         if ($flush) {
             $this->getEntityManager()->flush();
         }
