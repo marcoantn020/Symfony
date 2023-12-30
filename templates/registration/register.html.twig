@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Cadastro de Usuario{% endblock %}
+
+{% block body %}
+
+    {{ form_errors(registrationForm) }}
+
+    {{ form_start(registrationForm) }}
+        {{ form_row(registrationForm.email) }}
+        {{ form_row(registrationForm.plainPassword, {
+            label: 'Password'
+        }) }}
+
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a class="btn btn-secondary" href="{{ path('app_login') }}">Voltar </a>
+    {{ form_end(registrationForm) }}
+{% endblock %}
