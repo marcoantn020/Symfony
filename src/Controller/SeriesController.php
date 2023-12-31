@@ -7,21 +7,19 @@ use App\Entity\Episode;
 use App\Entity\Season;
 use App\Entity\Series;
 use App\Form\SeriesFormType;
+use App\Message\SeriesWasCreated;
 use App\Repository\SeriesRepository;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
-use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class SeriesController extends AbstractController
 {
     public function __construct(
         private readonly SeriesRepository $seriesRepository,
-        private MailerInterface $mailer
+        private MessageBusInterface $messageBus
     ) {
     }
 
@@ -67,10 +65,7 @@ class SeriesController extends AbstractController
         }
 
         $this->seriesRepository->add($series, true);
-
-        $user = $this->getUser();
-
-        $this->sendMail($user, $series);
+        $this->messageBus->dispatch(new SeriesWasCreated($series));
 
         $this->addFlash('success', 'Serie adicionada com sucesso.');
 
@@ -108,24 +103,5 @@ class SeriesController extends AbstractController
         $this->addFlash('success', 'Serie editada com sucesso.');
 
         return $this->redirect('/series');
-    }
-
-    /**
-     * @param UserInterface|null $user
-     * @param Series $series
-     * @return void
-     * @throws TransportExceptionInterface
-     */
-    private function sendMail(?UserInterface $user, Series $series): void
-    {
-        $email = (new TemplatedEmail())
-            ->from('hello@example.com')
-            ->to($user->getUserIdentifier())
-            ->subject('Nova serie criada!')
-            ->text("Serie {$series->getName()} foi criada")
-            ->htmlTemplate("emails/series_created.html.twig")
-            ->context(compact('series'));
-
-        $this->mailer->send($email);
     }
 }
