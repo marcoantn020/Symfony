@@ -2,9 +2,11 @@
 
 namespace App\Repository;
 
+use App\DTO\SeriesCreateInputDTO;
 use App\Entity\Series;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Psr\Log\LoggerInterface;
 
 /**
  * @extends ServiceEntityRepository<Series>
@@ -16,8 +18,12 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class SeriesRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        private SeasonRepository $seasonRepository,
+        private EpisodeRepository $episodeRepository,
+        private LoggerInterface $logger
+    ) {
         parent::__construct($registry, Series::class);
     }
 
@@ -29,16 +35,32 @@ class SeriesRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function add(Series $series, bool $flush = false): void
+    /**
+     * @param SeriesCreateInputDTO $input
+     * @param bool $flush
+     * @return Series
+     */
+    public function add(SeriesCreateInputDTO $input, bool $flush = false)
     {
-        $this->getEntityManager()->persist($series);
+        $entityManager = $this->getEntityManager();
 
-        if ($flush) {
-            $this->getEntityManager()->flush();
+        $series = new Series($input->seriesName, $input->coverImage);
+        $entityManager->persist($series);
+        $entityManager->flush();
+
+        try {
+            $this->seasonRepository->addSeasonsQuantity($input->seasonsQuantity, $series->getId());
+            $seasons = $this->seasonRepository->findBy(['series' => $series]);
+            $this->episodeRepository->addEpisodesPerSeason($input->episodePerSeason, $seasons);
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+            $this->remove($series, true);
         }
+
+        return $series;
     }
 
-    private function remove(Series $series, bool $flush = false): void
+    public function remove(Series $series, bool $flush = false): void
     {
         $this->getEntityManager()->remove($series);
         if ($flush) {

@@ -10,13 +10,19 @@
         {% for series in seriesList %}
             <li class="list-group-item d-flex justify-content-between align-items-center">
 
-                {% if is_granted('ROLE_USER') %}
-                <a href="{{ path('app_seasons', {'seriesId': series.id}) }}">
-                    {{ series.name }}
-                </a>
-                {% else %}
-                    {{ series.name }}
-                {% endif %}
+                <div>
+                    {% if series.coverImagePath is not empty %}
+                        <img class="img-thumbnail mr-3" width="100" src="{{ asset("/uploads/cover_image/") ~ series.coverImagePath }}" alt="thubnail serie">
+                    {% endif %}
+
+                    {% if is_granted('ROLE_USER') %}
+                        <a href="{{ path('app_seasons', {'seriesId': series.id}) }}">
+                            {{ series.name }}
+                        </a>
+                    {% else %}
+                        {{ series.name }}
+                    {% endif %}
+                </div>
 
                 {% if is_granted('ROLE_USER') %}
                 <span class="d-flex gap-2">

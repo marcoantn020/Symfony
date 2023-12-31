@@ -6,7 +6,6 @@ use App\Repository\SeriesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SeriesRepository::class)]
 #[ORM\Cache]
@@ -28,13 +27,24 @@ class Series
 
    public function __construct(
        #[ORM\Column]
-       #[Assert\NotNull]
-       #[Assert\NotBlank]
-       #[Assert\Length(min: 3)]
-       private string $name = ''
+       private string $name,
+       #[ORM\Column]
+       private ?string $coverImagePath = null
    ) {
        $this->seasons = new ArrayCollection();
    }
+
+    public function getCoverImagePath(): ?string
+    {
+        return $this->coverImagePath;
+    }
+
+    public function setCoverImagePath(string $coverImagePath): self
+    {
+        $this->coverImagePath = $coverImagePath;
+
+        return $this;
+    }
 
     public function getId(): ?int
     {

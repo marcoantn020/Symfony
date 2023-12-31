@@ -1,8 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Temporadas: {{ series.name }}{% endblock %}
+{% block title %}Todas as temporadas - {{ series.name }}{% endblock %}
 
 {% block body %}
+
+    {% if series.coverImagePath is not empty %}
+    <div class="container-fluid text-center">
+        <img class="img-fluid mb-2" src="{{ asset("/uploads/cover_image/") ~ series.coverImagePath }}" alt="Banner serie">
+    </div>
+    {% endif %}
 
     <a class="btn btn-dark mb-2" href="{{ path('app_series') }}">Voltar</a>
     <ul class="list-group">
