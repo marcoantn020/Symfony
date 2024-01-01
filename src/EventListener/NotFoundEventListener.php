@@ -3,6 +3,7 @@
 namespace App\EventListener;
 
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -20,7 +21,7 @@ class NotFoundEventListener
         $request = $event->getRequest();
         $language = $request->getPreferredLanguage();
 
-        if (!str_starts_with($request->getPathInfo(), "/$language")) {
+        if (!$this->startsWithValidLanguage($request)) {
             $response = new Response(status: 302);
             $response->headers->add([
                 'Location' => "/$language" . $request->getPathInfo()
@@ -29,5 +30,17 @@ class NotFoundEventListener
             $event->setResponse($response);
         }
 
+    }
+
+    public function startsWithValidLanguage(Request $request): bool
+    {
+        $validLanguages = ['en', 'pt_BR'];
+        foreach ($validLanguages as $language) {
+            if (str_starts_with($request->getPathInfo(), "/$language")) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

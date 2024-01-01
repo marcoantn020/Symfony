@@ -6,10 +6,15 @@ when@dev:
     monolog:
         handlers:
             main:
-                type: stream
-                path: "%kernel.logs_dir%/%kernel.environment%.log"
-                level: debug
+                type: fingers_crossed
+                excluded_http_codes: [404]
+#                path: "%kernel.logs_dir%/%kernel.environment%.log"
+                action_level: warning
                 channels: ["!event"]
+                handler: file
+            file:
+                type: stream
+                path: "%kernel.logs_dir%/%kernel.environment%-my.log"
             # uncomment to get logging in your browser
             # you may have to allow bigger header sizes in your Web server configuration
             #firephp:
