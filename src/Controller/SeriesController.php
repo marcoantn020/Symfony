@@ -14,13 +14,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SeriesController extends AbstractController
 {
     public function __construct(
         private readonly SeriesRepository $seriesRepository,
         private readonly MessageBusInterface $messageBus,
-        private readonly SluggerInterface $slugger
+        private readonly SluggerInterface $slugger,
+        private readonly TranslatorInterface $translator
     ) {
     }
 
@@ -79,7 +81,7 @@ class SeriesController extends AbstractController
 
         $this->addFlash('success', 'Serie adicionada com sucesso.');
 
-        return $this->redirect('/series');
+        return $this->redirectToRoute('app_series');
     }
 
     #[Route('/series/delete/{seriesId}',  name: 'app_series_delete', methods: ['DELETE'])]
@@ -88,8 +90,8 @@ class SeriesController extends AbstractController
         $series = $this->seriesRepository->find($seriesId);
         $this->seriesRepository->remove(series: $series, flush: true);
         $this->messageBus->dispatch(new SeriesWasRemoved($series));
-        $this->addFlash('success', 'Serie excluida com sucesso.');
-        return $this->redirect('/series');
+        $this->addFlash('success', $this->translator->trans('series.delete'));
+        return $this->redirectToRoute('app_series');
     }
 
     #[Route('/series/edit/{id}', name: 'app_series_edit_form', methods: ['GET'])]
@@ -114,6 +116,6 @@ class SeriesController extends AbstractController
         $this->seriesRepository->add($series, true);
         $this->addFlash('success', 'Serie editada com sucesso.');
 
-        return $this->redirect('/series');
+        return $this->redirectToRoute('app_series');
     }
 }

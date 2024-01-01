@@ -48,11 +48,11 @@ class EpisodeController extends AbstractController
             );
             $this->episodeRepository->setEpisodeWatched($watchedEpisodes, false);
             $this->addFlash('success', 'Episodios desmarcados como assistidos');
-            return $this->redirect("/season/{$season->getId()}/episodes");
+            return $this->redirectToRoute("app_episode_watched_episode", ['seasonId' => $season->getId()]);
         }
 
         $this->episodeRepository->setEpisodeWatched($watchedEpisodes, true);
         $this->addFlash('success', 'Episodios marcados como assistidos');
-        return $this->redirect("/season/{$season->getId()}/episodes");
+        return $this->redirectToRoute("app_episode_watched_episode", ['seasonId' => $season->getId()]);
     }
 }

@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Lista de Series{% endblock %}
+{% block title %} {% trans %} Lista de Series {% endtrans %} {% endblock %}
 
 {% block body %}
     {% if is_granted('ROLE_USER') %}
